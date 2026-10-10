@@ -1,6 +1,7 @@
 import { sendForgotPasswordEmail } from "@/backend/helpers/sendForgotPasswordEmail";
 import dbConnect from "@/backend/lib/dbConnect";
 import UserModel from "@/backend/model/User";
+import { randomInt } from "node:crypto";
 
 export async function POST(request: Request) {
   const { identifier } = await request.json();
@@ -28,7 +29,7 @@ export async function POST(request: Request) {
       throw new Error("No user found with this username or email");
     }
 
-    const verifyCode = Math.floor(100000 + Math.random() * 900000);
+    const verifyCode = randomInt(100000, 1000000);
 
     const verifyCodeExpiry = new Date();
     verifyCodeExpiry.setHours(verifyCodeExpiry.getHours() + 1);

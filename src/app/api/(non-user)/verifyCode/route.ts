@@ -1,6 +1,7 @@
 import { sendVerificationEmail } from "@/backend/helpers/sendVerificationEmail";
 import dbConnect from "@/backend/lib/dbConnect";
 import UserModel from "@/backend/model/User";
+import { randomInt } from "node:crypto";
 
 export async function POST(request: Request) {
   const { identifier, verifyCode } = await request.json();
@@ -67,7 +68,7 @@ export async function POST(request: Request) {
     const isVerifyCodeNotExpired = new Date(user.verifyCodeExpiry) > new Date();
 
     if (isVerifyCodeValid && isVerifyCodeNotExpired) {
-      user.verifyCode = Math.floor(100000 + Math.random() * 900000);
+      user.verifyCode = randomInt(100000, 1000000);
       user.verifyCodeExpiry = new Date(-1);
       user.isVerified = true;
       await user.save();
@@ -81,7 +82,7 @@ export async function POST(request: Request) {
         }
       );
     } else if (isVerifyCodeValid && !isVerifyCodeNotExpired) {
-      user.verifyCode = Math.floor(100000 + Math.random() * 900000);
+      user.verifyCode = randomInt(100000, 1000000);
 
       const verifyCodeExpiry = new Date();
       verifyCodeExpiry.setHours(verifyCodeExpiry.getHours() + 1);

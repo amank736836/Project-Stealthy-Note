@@ -1,6 +1,15 @@
 import { ApiResponse } from "@/types/ApiResponse";
 import nodemailer from "nodemailer";
 
+const escapeHtml = (value: string) =>
+  value.replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  })[character] as string);
+
 const transporter = nodemailer.createTransport({
   service: "gmail",
   host: "smtp.gmail.com",
@@ -23,6 +32,11 @@ export async function sendForgotPasswordEmail({
   verifyCode: number;
   baseUrl: string;
 }): Promise<ApiResponse> {
+  const safeUsername = escapeHtml(username);
+  const resetUrl = new URL("/verify-forgot-password", baseUrl);
+  resetUrl.searchParams.set("identifier", email);
+  resetUrl.searchParams.set("verifyCode", String(verifyCode));
+  const safeResetUrl = escapeHtml(resetUrl.toString());
   const Mail = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -116,11 +130,11 @@ export async function sendForgotPasswordEmail({
     <div class="email-container">
         <div class="header">Forgot Your Password</div>
         <div class="content">
-            <p>Hello, <strong>${username}</strong>,</p>
+            <p>Hello, <strong>${safeUsername}</strong>,</p>
             <p>We received a request to forgot your password. Use the verification code below to proceed:</p>
             <div class="verification-code">${verifyCode}</div>
             <p>Or, click the button below to forgot your password instantly:</p>
-            <a href="${baseUrl}/verify-forgot-password?identifier=${email}&verifyCode=${verifyCode}" 
+            <a href="${safeResetUrl}"
             class="forgot-button">Forgot Password</a>
             <p>If you did not request this, you can safely ignore this email.</p>
         </div>

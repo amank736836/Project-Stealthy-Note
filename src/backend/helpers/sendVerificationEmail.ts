@@ -1,6 +1,15 @@
 import { ApiResponse } from "@/types/ApiResponse";
 import nodemailer from "nodemailer";
 
+const escapeHtml = (value: string) =>
+  value.replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  })[character] as string);
+
 const transporter = nodemailer.createTransport({
   service: "gmail",
   host: "smtp.gmail.com",
@@ -23,6 +32,11 @@ export async function sendVerificationEmail({
   verifyCode: number;
   baseUrl: string;
 }): Promise<ApiResponse> {
+  const safeUsername = escapeHtml(username);
+  const verificationUrl = new URL("/verify", baseUrl);
+  verificationUrl.searchParams.set("identifier", username);
+  verificationUrl.searchParams.set("verifyCode", String(verifyCode));
+  const safeVerificationUrl = escapeHtml(verificationUrl.toString());
   const Mail = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -94,11 +108,11 @@ export async function sendVerificationEmail({
     <div class="email-container">
         <div class="header">Verify Your Email</div>
         <div class="content">
-            <p>Hello, ${username}</p>
+            <p>Hello, ${safeUsername}</p>
             <p>Thank you for signing up! Please confirm your email address by using the verification code below:</p>
             <div class="verification-code">${verifyCode}</div>
             <p>Alternatively, you can click the button below to verify your email:</p>
-            <a href="${baseUrl}/verify?identifier=${username}&verifyCode=${verifyCode}"
+            <a href="${safeVerificationUrl}"
              class="verify-button">Verify Email</a>
             <p>If you did not create an account, you can safely ignore this email.</p>
         </div>

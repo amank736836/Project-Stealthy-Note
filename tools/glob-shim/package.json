@@ -1,0 +1,6 @@
+{
+  "name": "fast-glob",
+  "version": "3.3.3-secure-shim",
+  "main": "index.js",
+  "dependencies": { "picomatch": "^4.0.4" }
+}

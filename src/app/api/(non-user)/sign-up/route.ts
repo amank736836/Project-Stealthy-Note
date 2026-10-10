@@ -2,6 +2,7 @@ import { sendVerificationEmail } from "@/backend/helpers/sendVerificationEmail";
 import dbConnect from "@/backend/lib/dbConnect";
 import UserModel from "@/backend/model/User";
 import bcrypt from "bcryptjs";
+import { randomInt } from "node:crypto";
 
 export async function POST(request: Request) {
   const { email, username, password } = await request.json();
@@ -66,7 +67,7 @@ export async function POST(request: Request) {
       email,
     });
 
-    const verifyCode = Math.floor(100000 + Math.random() * 900000);
+    const verifyCode = randomInt(100000, 1000000);
 
     const verifyCodeExpiry = new Date();
     verifyCodeExpiry.setHours(verifyCodeExpiry.getHours() + 1);

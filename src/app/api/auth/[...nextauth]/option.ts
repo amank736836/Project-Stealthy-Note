@@ -4,6 +4,7 @@ import UserModel from "@/backend/model/User";
 import bcrypt from "bcryptjs";
 import NextAuth, { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import { randomInt } from "node:crypto";
 
 const authOptions: NextAuthConfig = {
   providers: [
@@ -66,7 +67,7 @@ const authOptions: NextAuthConfig = {
 
           if (!user.isVerified) {
             if (user.verifyCodeExpiry < new Date()) {
-              const verifyCode = Math.floor(100000 + Math.random() * 900000);
+              const verifyCode = randomInt(100000, 1000000);
 
               const verifyCodeExpiry = new Date();
               verifyCodeExpiry.setHours(verifyCodeExpiry.getHours() + 1);

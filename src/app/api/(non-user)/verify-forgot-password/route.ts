@@ -1,6 +1,7 @@
 import dbConnect from "@/backend/lib/dbConnect";
 import UserModel from "@/backend/model/User";
 import bcrypt from "bcryptjs";
+import { randomInt } from "node:crypto";
 
 export async function POST(request: Request) {
   const { identifier, verifyCode, password } = await request.json();
@@ -82,7 +83,7 @@ export async function POST(request: Request) {
       user.isVerified = true;
     }
 
-    user.verifyCode = Math.floor(100000 + Math.random() * 900000);
+    user.verifyCode = randomInt(100000, 1000000);
     user.verifyCodeExpiry = new Date(-1);
 
     const match = await bcrypt.compare(password, user.password);
