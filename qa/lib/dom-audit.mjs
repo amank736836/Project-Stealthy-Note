@@ -390,11 +390,11 @@ export async function makeDom(html, rawCss, { width = 1366, height = 900, theme 
   const tokens = theme === "dark" ? { ...baseTokens, ...darkTokens } : baseTokens;
   const css = adaptCssForHappyDom(resolveVars(rawCss, tokens), theme);
 
-  // Strip the <link rel=stylesheet> tags (happy-dom would try to fetch them).
-  let cleaned = html
-    .replace(/<link[^>]+rel="stylesheet"[^>]*>/g, "")
-    .replace(/<script[^>]*src="[^"]*"[^>]*><\/script>/g, "")
-    .replace(/<script[^>]*>[\s\S]*?<\/script>/g, "");
+  // Scripts and remote stylesheets are removed through the DOM API below, not
+  // with a regex over the markup. happy-dom never evaluates inline scripts
+  // during document.write, and DOM removal cannot be defeated by <SCRIPT>,
+  // <script > or a nested tag the way a filtering regexp can.
+  let cleaned = html;
 
   // next-themes adds the class on the client; without it every `dark:` utility
   // (compiled to `:is(.dark *)`) silently fails to match.
@@ -406,10 +406,31 @@ export async function makeDom(html, rawCss, { width = 1366, height = 900, theme 
     );
   }
 
-  const window = new Window({ url: "http://127.0.0.1:3000/", width, height });
+  const window = new Window({
+    url: "http://127.0.0.1:3000/",
+    width,
+    height,
+    settings: {
+      // Belt and braces: even if happy-dom's evaluation defaults change, nothing
+      // in the fetched document runs or triggers a subresource load.
+      disableJavaScriptEvaluation: true,
+      disableJavaScriptFileLoading: true,
+      disableCSSFileLoading: true,
+      disableIframePageLoading: true,
+    },
+  });
   window.document.write(
     cleaned.replace("<head>", `<head><style>${css}</style>`)
   );
+
+  // Drop the document's own scripts and stylesheet links so the resolved CSS
+  // above is the only sheet in play.
+  for (const el of window.document.querySelectorAll(
+    "script, link[rel='stylesheet']"
+  )) {
+    el.remove();
+  }
+
   return window;
 }
 
