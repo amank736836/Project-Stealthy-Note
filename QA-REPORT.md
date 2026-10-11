@@ -70,7 +70,7 @@ Two residual accuracy limits I could not remove:
 
 ## 1. Findings
 
-**29 findings on first pass → 1 remaining.** 28 fixed, 1 confirmed as intended behaviour.
+**29 findings on first pass → 1 remaining.** 28 fixed, 1 confirmed as intended behaviour. CI's CodeQL diff scan then raised a further 4 high-severity alerts against the test harness itself (L-6), also fixed.
 
 ### Critical
 
@@ -118,6 +118,7 @@ after : 401  application/json    → {"success":false,"message":"Unauthorized. P
 | L-3 | `src/components/MessageCarousel.tsx` | Dead code — `grep` finds no importer. It is the only consumer of `ui/carousel.tsx`, which in turn is the only consumer of `embla-carousel-*` | **Not changed.** Deleting it would cascade into a second unused component and two dependencies; that is refactoring, not bug fixing. Recommend removing all three deliberately in a separate change | **Pending** |
 | L-4 | Response headers | `X-Powered-By: Next.js` exposed; no CSP, `X-Content-Type-Options`, `Referrer-Policy` or `X-Frame-Options` | **Not changed** — hardening headers are a deliberate security-policy decision, not a QA fix. Flagged for the maintainer | **Pending** |
 | L-5 | `/public` | `next.svg`, `vercel.svg`, `globe.svg`, `window.svg`, `file.svg`, `logo.png` are unreferenced create-next-app leftovers | **Not changed** (no runtime impact) | **Pending** |
+| L-6 | `qa/lib/dom-audit.mjs` (test harness, not app code) | CI **CodeQL** flagged 4 high-severity alerts at lines 394–397 — *Incomplete multi-character sanitization* and *Bad HTML filtering regexp*. The harness stripped `<script>`/`<link>` from fetched HTML with three `.replace(/<script…/)` passes. The regexes are genuinely wrong: they miss `<SCRIPT>` and `<script >`, and a single pass can leave a `<script` fragment behind. | Regex-based HTML filtering | Regexes deleted entirely. A probe confirmed **happy-dom never evaluates inline scripts during `document.write`**, so the stripping was unnecessary — `makeDom` now constructs a `Window` with `disableJavaScriptEvaluation` / `disableJavaScriptFileLoading` / `disableCSSFileLoading` / `disableIframePageLoading` and removes `script, link[rel='stylesheet']` through DOM APIs. **CodeQL now passes** (see §2) | **Fixed** |
 
 ---
 
@@ -132,6 +133,15 @@ npm run test:schema →   4 passed /  4   (qa/schema.test.ts — real zod schema
 npm run qa:audit    →   1 finding       (1558 text nodes, 584 controls, 1818 boxes inspected)
 npx next build      →  ✓ Compiled successfully, 20/20 static pages, types valid
 ```
+
+### CI on the PR (GitHub Actions / Vercel / GitGuardian)
+
+| Check | Result |
+|---|---|
+| `Analyze (javascript-typescript)` — CodeQL | **pass** (1m4s) |
+| `CodeQL` — diff-scoped security scan | **pass** (3s) — was *fail* with 4 high-severity alerts on the first push, fixed by L-6 above |
+| `GitGuardian Security Checks` | **pass** (12s) |
+| `Vercel` | **fail — plan quota, not a code failure.** Commit `1ae1fdd` deployed successfully (`Deployment has completed`); the follow-up commit `51d74eb` returned `Deployment rate limited — retry in 24 hours` (`upgradeToPro=build-rate-limit`). Vercel's own successful build of `1ae1fdd` is the independent confirmation that the branch builds. |
 
 `npm run qa:all` runs all four in sequence.
 
