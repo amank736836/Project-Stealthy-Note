@@ -16,7 +16,10 @@
     --secondary: 147 24% 93%;
     --secondary-foreground: 153 26% 16%;
     --muted: 147 19% 94%;
-    --muted-foreground: 148 10% 43%;
+    /* 43% measured 4.18:1 on the tinted --muted / CTA backgrounds, under the
+       WCAG AA 4.5:1 for normal text. 40% gives 4.70:1 there and 5.11:1 on the
+       page background, with no visible change in tone. */
+    --muted-foreground: 148 10% 40%;
     --accent: 83 78% 70%;
     --accent-foreground: 153 32% 12%;
     --destructive: 0 72% 52%;
@@ -86,6 +89,22 @@
   button {
     -webkit-tap-highlight-color: transparent;
   }
+}
+
+/* Keyboard focus: the bespoke nav/CTA controls below only had the UA default
+   outline, which is thin and does not adapt to the theme. Give them the same
+   ring the shadcn components already use (WCAG 2.4.7). */
+.site-brand:focus-visible,
+.site-nav-link:focus-visible,
+.nav-action:focus-visible,
+.theme-toggle:focus-visible,
+.cta-primary:focus-visible,
+.cta-secondary:focus-visible,
+.auth-link:focus-visible,
+.landing-footer a:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 3px;
+  border-radius: 8px;
 }
 
 /* Shared navigation */
@@ -910,7 +929,9 @@
 }
 
 .step-number {
-  color: hsl(var(--muted-foreground) / 0.72);
+  /* No alpha: at 12px/700 this is normal-size text and needs 4.5:1.
+     Measured 2.78:1 light / 4.35:1 dark at 0.72 -> 4.66:1 / 7.15:1 at 1.0. */
+  color: hsl(var(--muted-foreground));
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.12em;

@@ -56,6 +56,7 @@ const useFormField = () => {
 
   return {
     id,
+    hasDescription: itemContext.hasDescription,
     name: fieldContext.name,
     formItemId: `${id}-form-item`,
     formDescriptionId: `${id}-form-item-description`,
@@ -66,6 +67,8 @@ const useFormField = () => {
 
 type FormItemContextValue = {
   id: string;
+  hasDescription: boolean;
+  setHasDescription: (value: boolean) => void;
 };
 
 const FormItemContext = React.createContext<FormItemContextValue>(
@@ -77,9 +80,10 @@ const FormItem = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
   const id = React.useId();
+  const [hasDescription, setHasDescription] = React.useState(false);
 
   return (
-    <FormItemContext.Provider value={{ id }}>
+    <FormItemContext.Provider value={{ id, hasDescription, setHasDescription }}>
       <div ref={ref} className={cn("space-y-2", className)} {...props} />
     </FormItemContext.Provider>
   );
@@ -107,18 +111,27 @@ const FormControl = React.forwardRef<
   React.ElementRef<typeof Slot>,
   React.ComponentPropsWithoutRef<typeof Slot>
 >(({ ...props }, ref) => {
-  const { error, formItemId, formDescriptionId, formMessageId } =
-    useFormField();
+  const {
+    error,
+    formItemId,
+    formDescriptionId,
+    formMessageId,
+    hasDescription,
+  } = useFormField();
+
+  // Only reference ids that are actually rendered, otherwise the control carries
+  // an aria-describedby that resolves to nothing (flagged by axe as
+  // aria-valid-attr-value).
+  const describedBy =
+    [hasDescription ? formDescriptionId : null, error ? formMessageId : null]
+      .filter(Boolean)
+      .join(" ") || undefined;
 
   return (
     <Slot
       ref={ref}
       id={formItemId}
-      aria-describedby={
-        !error
-          ? `${formDescriptionId}`
-          : `${formDescriptionId} ${formMessageId}`
-      }
+      aria-describedby={describedBy}
       aria-invalid={!!error}
       {...props}
     />
@@ -131,6 +144,12 @@ const FormDescription = React.forwardRef<
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => {
   const { formDescriptionId } = useFormField();
+  const { setHasDescription } = React.useContext(FormItemContext);
+
+  React.useEffect(() => {
+    setHasDescription(true);
+    return () => setHasDescription(false);
+  }, [setHasDescription]);
 
   return (
     <p

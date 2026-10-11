@@ -1,6 +1,9 @@
 {
+  "//note": "Local supply-chain shim for fast-glob, wired via the root package.json \"overrides\" map. npm resolves file: overrides relative to the OVERRIDDEN package, so the specifier must be ../../../tools/glob-shim (not ./tools/glob-shim) or the symlink lands on a nonexistent path and @next/eslint-plugin-next fails to load, which silently disables ESLint during next build.",
   "name": "fast-glob",
   "version": "3.3.3-secure-shim",
   "main": "index.js",
-  "dependencies": { "picomatch": "^4.0.4" }
+  "dependencies": {
+    "picomatch": "^4.0.4"
+  }
 }

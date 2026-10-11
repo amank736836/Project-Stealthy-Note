@@ -141,13 +141,13 @@ function SignUp({
   };
 
   return (
-    <div className="auth-page flex min-h-[calc(100vh-76px)] items-center justify-center px-4 py-12 bg-gray-100 dark:bg-gray-900">
-      <div className="auth-card w-full max-w-md p-8 space-y-8 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+    <main className="auth-page flex items-center justify-center">
+      <div className="auth-card w-full space-y-6">
         <div className="text-center">
-          <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-6 text-gray-900 dark:text-white">
+          <h1 className="mb-4">
             Create your private inbox
           </h1>
-          <p className="mb-4 text-gray-700 dark:text-gray-300">
+          <p className="text-muted-foreground">
             A link for your circle. A place for the honest notes.
           </p>
         </div>
@@ -158,7 +158,7 @@ function SignUp({
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-900 dark:text-gray-300">
+                  <FormLabel>
                     Username
                   </FormLabel>
                   <FormControl>
@@ -166,7 +166,6 @@ function SignUp({
                       placeholder="Username"
                       {...field}
                       type="text"
-                      className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       onChange={(e) => {
                         field.onChange(e);
                         setDebouncedUsername(e.target.value);
@@ -177,7 +176,11 @@ function SignUp({
                     <Loader2 className="animate-spin text-gray-500 dark:text-gray-400" />
                   )}
                   <p
-                    className={`text-sm flex items-center ${usernameMessage === "Username is unique" ? "text-green-500" : "text-red-500"}`}
+                    className={`text-sm flex items-center ${
+                      usernameMessage === "Username is unique"
+                        ? "text-primary"
+                        : "text-destructive dark:text-red-400"
+                    }`}
                   >
                     {usernameMessage === "Username is unique" ? "✅" : "❌"}{" "}
                     {usernameMessage}
@@ -192,7 +195,7 @@ function SignUp({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-900 dark:text-gray-300">
+                  <FormLabel>
                     Email
                   </FormLabel>
                   <FormControl>
@@ -200,7 +203,6 @@ function SignUp({
                       placeholder="Email"
                       {...field}
                       type="email"
-                      className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     />
                   </FormControl>
                   <FormMessage />
@@ -212,7 +214,7 @@ function SignUp({
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-900 dark:text-gray-300">
+                  <FormLabel>
                     Password
                   </FormLabel>
                   <FormControl>
@@ -220,7 +222,6 @@ function SignUp({
                       placeholder="Password"
                       type="password"
                       {...field}
-                      className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     />
                   </FormControl>
                   <FormMessage />
@@ -232,7 +233,7 @@ function SignUp({
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-900 dark:text-gray-300">
+                  <FormLabel>
                     Confirm Password
                   </FormLabel>
                   <FormControl>
@@ -240,7 +241,6 @@ function SignUp({
                       placeholder="Confirm Password"
                       type="password"
                       {...field}
-                      className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     />
                   </FormControl>
                   <FormMessage />
@@ -248,7 +248,7 @@ function SignUp({
               )}
             />
 
-            <p className="text-red-500 dark:text-red-400 flex justify-center w-full">
+            <p className="text-destructive dark:text-red-400 flex justify-center w-full">
               {error}
             </p>
 
@@ -271,7 +271,7 @@ function SignUp({
           </form>
         </Form>
 
-        <div className="text-center mt-4">
+        <div className="text-center">
           <p className="text-gray-700 dark:text-gray-300">
             Already have an account?{" "}
             <Link
@@ -292,7 +292,7 @@ function SignUp({
           </p>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 

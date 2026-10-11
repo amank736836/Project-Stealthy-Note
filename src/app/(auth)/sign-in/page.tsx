@@ -85,13 +85,13 @@ function SignIn({
   };
 
   return (
-    <div className="auth-page flex min-h-[calc(100vh-76px)] items-center justify-center px-4 py-12 bg-gray-100 dark:bg-gray-900">
-      <div className="auth-card w-full max-w-md p-8 space-y-8 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+    <main className="auth-page flex items-center justify-center">
+      <div className="auth-card w-full space-y-6">
         <div className="text-center">
-          <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-6 text-gray-900 dark:text-white">
+          <h1 className="mb-4">
             Welcome back
           </h1>
-          <p className="mb-6 text-gray-700 dark:text-gray-300">
+          <p className="text-muted-foreground">
             Sign in to open your private inbox and see what your people have shared.
           </p>
         </div>
@@ -103,7 +103,7 @@ function SignIn({
               name="identifier"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-900 dark:text-gray-300 mt-8">
+                  <FormLabel>
                     Username or Email
                   </FormLabel>
                   <FormControl>
@@ -111,7 +111,6 @@ function SignIn({
                       placeholder="Username or Email"
                       {...field}
                       type="text"
-                      className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     />
                   </FormControl>
                   <FormMessage />
@@ -123,7 +122,7 @@ function SignIn({
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-900 dark:text-gray-300 mt-8">
+                  <FormLabel>
                     Password
                   </FormLabel>
                   <FormControl>
@@ -131,7 +130,6 @@ function SignIn({
                       placeholder="Password"
                       type="password"
                       {...field}
-                      className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     />
                   </FormControl>
                   <FormMessage />
@@ -143,7 +141,7 @@ function SignIn({
               <Button
                 type="submit"
                 disabled={isButtonDisabled || isSubmitting}
-                className="auth-submit-button mt-8"
+                className="auth-submit-button"
               >
                 {isSubmitting ? (
                   <>
@@ -158,8 +156,8 @@ function SignIn({
           </form>
         </Form>
 
-        <div className="text-center mt-6">
-          <p className="text-gray-700 dark:text-gray-300 mt-8">
+        <div className="text-center">
+          <p className="text-muted-foreground">
             Forgot your password?{" "}
             <Link
               href={{
@@ -177,8 +175,8 @@ function SignIn({
           </p>
         </div>
 
-        <div className="text-center mt-6">
-          <p className="text-gray-700 dark:text-gray-300 mt-8">
+        <div className="text-center">
+          <p className="text-muted-foreground">
             Don&apos;t have an account?{" "}
             <Link
               href={{
@@ -196,7 +194,7 @@ function SignIn({
           </p>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 

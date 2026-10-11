@@ -15,6 +15,11 @@ const ToastViewport = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <ToastPrimitives.Viewport
     ref={ref}
+    // The rendered viewport is a bare <ol tabindex="-1">: no landmark role and
+    // no accessible name, so screen readers announce nothing when a toast
+    // appears. Name the live region explicitly (still overridable by callers).
+    role="region"
+    aria-label="Notifications"
     className={cn(
       "fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]",
       className
