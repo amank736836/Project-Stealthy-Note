@@ -58,7 +58,7 @@ function VerifyAccount({
     resolver: zodResolver(userVerifySchema),
     defaultValues: {
       identifier: identifier || "",
-      verifyCode: verifyCode || 0,
+      verifyCode: verifyCode ? Number(verifyCode) : undefined,
     },
   });
 
@@ -110,13 +110,13 @@ function VerifyAccount({
   };
 
   return (
-    <div className="auth-page flex min-h-[calc(100vh-76px)] items-center justify-center px-4 py-12 bg-gray-100 dark:bg-gray-900">
-      <div className="auth-card w-full max-w-md p-8 space-y-8 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+    <main className="auth-page flex items-center justify-center">
+      <div className="auth-card w-full space-y-6">
         <div className="text-center">
-          <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-6 text-gray-900 dark:text-white">
+          <h1 className="mb-4">
             Verify Your Account
           </h1>
-          <p className="mb-4 text-gray-700 dark:text-gray-300">
+          <p className="text-muted-foreground">
             Enter the verification code sent to your email
           </p>
         </div>
@@ -127,14 +127,13 @@ function VerifyAccount({
               name="identifier"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-900 dark:text-gray-300">
+                  <FormLabel>
                     Username or Email
                   </FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Enter your username or email"
                       {...field}
-                      className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     />
                   </FormControl>
                   <FormMessage />
@@ -146,16 +145,24 @@ function VerifyAccount({
               name="verifyCode"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-900 dark:text-gray-300">
+                  <FormLabel>
                     Verification Code
                   </FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      autoComplete="one-time-code"
+                      maxLength={6}
                       placeholder="Verification Code"
                       {...field}
-                      className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      // Digits only. The old type="number" let `1e5` through as
+                      // 100000 and turned a cleared field into 0.
+                      onChange={(e) => {
+                        const digits = e.target.value.replace(/\D/g, "").slice(0, 6);
+                        field.onChange(digits === "" ? undefined : Number(digits));
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -179,7 +186,7 @@ function VerifyAccount({
           </form>
         </Form>
       </div>
-    </div>
+    </main>
   );
 }
 

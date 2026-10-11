@@ -8,8 +8,6 @@ export async function middleware(req: NextRequest) {
     cookieName: "__Secure-authjs.session-token",
   });
 
-  console.log(token);
-
   const pathname = req.nextUrl.pathname;
 
   if (
@@ -45,6 +43,17 @@ export async function middleware(req: NextRequest) {
     !pathname.startsWith("/api/suggest-messages") &&
     !pathname.startsWith("/api/auth/session")
   ) {
+    // API clients must never be redirected to an HTML page. A browser/XHR
+    // follows the 307, receives the sign-in document with a 200 status, and
+    // the caller's `catch` never runs — the dashboard then renders an empty
+    // inbox instead of an error. Answer with a JSON 401 instead.
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json(
+        { success: false, message: "Unauthorized. Please sign in again." },
+        { status: 401 }
+      );
+    }
+
     return NextResponse.redirect(new URL("/sign-in", req.url));
   }
 

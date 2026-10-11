@@ -1,0 +1,24 @@
+Fetched compiled CSS from http://127.0.0.1:3000: 69159 bytes
+
+=== HTTP results ===
+  200  /                              28432 B 
+  200  /sign-in                       15188 B 
+  200  /sign-up                       16796 B 
+  200  /forgot-password               14145 B 
+  200  /verify                        14950 B 
+  200  /verify-forgot-password        16482 B 
+  200  /u/alice                       21960 B 
+  307  /no-such-page                      8 B -> /sign-in
+
+=== Computed-style coverage ===
+  text nodes contrast-checked : 1558
+  controls touch-target checked: 584
+  boxes overflow-checked      : 1818
+
+=== Findings: 1 (Medium 1) ===
+
+[MEDIUM  ] functional           404 probe          
+            GET /no-such-page returned 307 -> /sign-in
+            /no-such-page
+
+Wrote qa/findings.json

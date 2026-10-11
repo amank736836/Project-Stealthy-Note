@@ -1,0 +1,57 @@
+{
+  "generatedAt": "2026-10-11T08:00:35.778Z",
+  "base": "http://127.0.0.1:3000",
+  "http": {
+    "/": {
+      "status": 200,
+      "location": null,
+      "bytes": 28432
+    },
+    "/sign-in": {
+      "status": 200,
+      "location": null,
+      "bytes": 15188
+    },
+    "/sign-up": {
+      "status": 200,
+      "location": null,
+      "bytes": 16796
+    },
+    "/forgot-password": {
+      "status": 200,
+      "location": null,
+      "bytes": 14145
+    },
+    "/verify": {
+      "status": 200,
+      "location": null,
+      "bytes": 14950
+    },
+    "/verify-forgot-password": {
+      "status": 200,
+      "location": null,
+      "bytes": 16482
+    },
+    "/u/alice": {
+      "status": 200,
+      "location": null,
+      "bytes": 21960
+    },
+    "/no-such-page": {
+      "status": 307,
+      "location": "/sign-in",
+      "bytes": 8
+    }
+  },
+  "findings": [
+    {
+      "severity": "Medium",
+      "page": "404 probe",
+      "viewport": "-",
+      "theme": "-",
+      "category": "functional",
+      "issue": "GET /no-such-page returned 307 -> /sign-in",
+      "element": "/no-such-page"
+    }
+  ]
+}
